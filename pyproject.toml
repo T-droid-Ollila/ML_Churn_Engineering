@@ -1,0 +1,52 @@
+[tool.black]
+# How should the code look?
+# Think of Black as Grammarly for Python formatting./ Code arrangement
+# Characters per line
+
+line-length = 94
+
+# I believe we can say that ./ is for file access in terms of creation or retrieval
+# while /. is for treating the dot as an extension of the fiel under question , but
+# when reading this you might encounter terms like literal dot , escape Characters , sepcial meta-characters
+
+include = "/.pyi?$"
+
+# --> The pipes act as commas to separate the files that are to be excluded
+
+exclude = """
+/(
+      .eggs         # exclude a few common directories in the
+    | .git          # root of the project
+    | .hg
+    | .mypy_cache
+    | .tox
+    | venv
+    | _build
+    | buck-out
+    | build
+    | dist
+  )/
+"""
+
+[tool.isort]
+# isort organizes imports.
+profile = "black"
+line_length = 100
+known_first_party = ["scripts"]
+multi_line_output = 4
+include_trailing_comma = true
+virtual_env = "venv"
+
+[tool.pyupgrade]
+py39plus = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = "test_*.py"
+
+[tool.coverage.run]
+omit = [
+    "*/tests/*",
+    "*/__init__.py",
+    "churn_src/visualization.py"
+]

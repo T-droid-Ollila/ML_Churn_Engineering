@@ -1,0 +1,55 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+    -   id: trailing-whitespace
+    -   id: end-of-file-fixer
+    -   id: check-merge-conflict
+    -   id: check-yaml
+    -   id: debug-statements
+    -   id: check-added-large-files
+        args: ['--maxkb=1000']
+        exclude: "notebooks"
+    -   id: check-yaml
+        exclude: "mkdocs.yml"
+
+  - repo: https://github.com/psf/black
+    rev: 26.5.1
+    hooks:
+      - id: black
+        language_version: python3.13
+
+  - repo: https://github.com/pycqa/flake8
+    rev: 7.3.0
+    hooks:
+      - id: flake8
+# This is for code quality
+# we're including an ignore option to ignore certain flake8 rules
+# so everything works with our Black and isort configurations.
+# E501: Line too long
+# W503: Line break occurred before binary operator
+# E226: Missing white space around arithmetic operator
+        args: [
+          "--max-line-length=100",
+          "--extend-ignore=E226,W503,E712,E402,E501",
+          "--exclude=.venv,.git,.tox,dist,doc,build,*.egg,notebooks",
+        ]
+
+  - repo: https://github.com/asottile/pyupgrade
+    rev: v3.21.2  # verify this tag exists on pyupgrade's GitHub
+    hooks:
+      - id: pyupgrade
+
+  - repo: https://github.com/pycqa/isort
+    rev: 9.0.0b1  # verify — 8.0.1 does not look like a real isort release
+    hooks:
+      - id: isort
+
+  - repo: local
+    hooks:
+      - id: pytest-check
+        name: pytest check
+        entry: pytest
+        language: system
+        pass_filenames: false
+        always_run: true

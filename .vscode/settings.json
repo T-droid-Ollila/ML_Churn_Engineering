@@ -1,0 +1,6 @@
+{
+    "dataWrangler.enabledFileTypes": {
+        "csv": false
+    },
+    "python-envs.defaultEnvManager": "ms-python.python:venv"
+}
