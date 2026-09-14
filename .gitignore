@@ -3,3 +3,5 @@
 \train_test
 \virtual
 \vscode
+\.dvc
+\__pycache__

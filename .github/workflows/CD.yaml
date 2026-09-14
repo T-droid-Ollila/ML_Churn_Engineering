@@ -1,0 +1,30 @@
+name: Deploy established CI workflows
+on:
+  push:
+    branches:
+      - 'main'
+
+jobs:
+  submit-batch-job:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Configure AWS credentials
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-region: us-east-1
+          
+      - name: Install Anyscale CLI
+        run: pip install anyscale
+        with: 
+          cache: 'pip'
+
+      - name: Submit batch-predict job
+        run: |
+          export ANYSCALE_HOST: ${{ secrets.ANYSCALE_HOST }}
+          export ANYSCALE_CLI_TOKEN: ${{ secrets.ANYSCALE_CLI_TOKEN }}
+          export AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          export AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          anyscale job submit -f deploy/jobs/job.yaml --wait
