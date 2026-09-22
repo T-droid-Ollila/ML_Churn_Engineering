@@ -1,0 +1,6 @@
+Name: workloads
+runtime_env:
+  working_dir: .
+image_uri: anyscale/image/churn-job-image:__IMAGE_TAG__
+entrypoint: bash deploy/jobs/workloads.sh
+max_retries: 1

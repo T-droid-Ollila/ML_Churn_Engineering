@@ -37,7 +37,7 @@ def extract_models(model: str, parameters: dict):
         return XGBClassifier(**parameters)
     elif model.lower() == "logistic_regression":
         return LogisticRegression(**parameters)
-    elif model.lower() == "decision_tree_classifier":
+    elif model.lower() == "decision_tree":
         return DecisionTreeClassifier(**parameters)
     # 4. If the model_type is unknown, raise an error
     else:

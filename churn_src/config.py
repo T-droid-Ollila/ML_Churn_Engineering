@@ -13,7 +13,7 @@ Base_path = Path(__file__).parent.absolute()
 # 2. Define (and create) a logs directory relative to that root
 log_path = os.path.join(Base_path, "logs")
 # 3. Creates the file if exists
-log_path.mkdir(exist_ok=True, parents=True)
+log_path.parent.mkdir(exist_ok=True, parents=True)
 
 # 4. Configure logging ONCE, here, and nowhere else in the project
 logging.basicConfig(

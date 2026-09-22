@@ -29,10 +29,18 @@ def load_data(test_size=0.2):
     df = df.set_index("security_no")
 
     X = df.drop("churn_risk_score", axis=1)
-    y = df["churn_ris_score"]
+    y = df["churn_risk_score"]
 
-    X_train, X_test, y_train, y_test = train_test_split(
+    x_train, x_test, y_train, y_test = train_test_split(
         X, y, test_size=test_size, stratify=y, random_state=42
     )
 
-    return X_train, X_test, y_train, y_test, df
+    processed_path = Path('train_test')
+    processed_path.parent.mkdir(exist_ok=True , parents=True)
+
+    x_train.to_csv(os.path.join(processed_path, "x_train.csv"))
+    x_test.to_csv(os.path.join(processed_path, "x_test.csv"))
+    y_train.to_csv(os.path.join(processed_path, "y_train.csv"))
+    y_test.to_csv(os.path.join(processed_path, "y_train.csv"))
+
+    return x_train, y_train, x_test, y_test

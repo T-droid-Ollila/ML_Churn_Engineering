@@ -14,13 +14,9 @@ style:
     flake8
     isort .
 
-.PHONY: test
-test:
-    pytest --cov=scripts tests/
-
 .PHONY: test-data
 test-data:
 	pytest --dataset-loc=$(DATASET_LOC) tests/test_dataset.py
 
 .PHONY: train
-train: scripts\train.py --model random_forest --mode search
+train: dvc exp run

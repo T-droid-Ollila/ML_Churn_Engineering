@@ -2,7 +2,7 @@ import json
 from pathlib import Path
 
 
-def save_best_params(model_name: str, best_params: dict, best_score: float, run_id: str):
+def save_best_params(model_name: str, best_params: dict, best_score: float, run_id: str ,num: int):
     """
     Saves the best parameters from a search to a JSON file.
 
@@ -22,7 +22,7 @@ def save_best_params(model_name: str, best_params: dict, best_score: float, run_
     results_dir.mkdir(exist_ok=True)
 
     # Create the best_params file
-    filepath = results_dir / f"{model_name}_best_params.json"
+    filepath = results_dir / model_name / f"exp_{num}.json"
 
     # Save the data
     data = {
@@ -39,7 +39,7 @@ def save_best_params(model_name: str, best_params: dict, best_score: float, run_
     return filepath
 
 
-def load_best_params(model_name: str):
+def load_best_params(model_name: str, num: int):
     """
     Loads the best parameters for a model from the JSON file.
 
@@ -47,12 +47,14 @@ def load_best_params(model_name: str):
     -----------
     model_name : str
         The name of the model (e.g., "random_forest")
+    num : int
+        The experiment number
 
     Returns:
     --------
     dict: The best parameters, or None if not found
     """
-    filepath = Path("results") / f"{model_name}_best_params.json"
+    filepath = Path("results") / model_name / f"exp_{num}.json"
 
     if not filepath.exists():
         return None
@@ -60,4 +62,4 @@ def load_best_params(model_name: str):
     with open(filepath) as f:
         data = json.load(f)
 
-    return data["best_params"]
+    return data
