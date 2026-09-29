@@ -2,7 +2,9 @@ import json
 from pathlib import Path
 
 
-def save_best_params(model_name: str, best_params: dict, best_score: float, run_id: str ,num: int):
+def save_best_params(
+    model_name: str, best_params: dict, best_score: float, run_id: str, num: int
+):
     """
     Saves the best parameters from a search to a JSON file.
 
@@ -62,4 +64,4 @@ def load_best_params(model_name: str, num: int):
     with open(filepath) as f:
         data = json.load(f)
 
-    return data
+    return data["best_params"], data["mlflow_run_id"]

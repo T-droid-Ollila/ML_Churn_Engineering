@@ -27,33 +27,24 @@ from sklearn import metrics
 # models
 from sklearn.model_selection import RandomizedSearchCV
 
-from churn_src.config import root_logger
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
+from config import root_logger
 
 # Customizable libraries
-from churn_src.data_loader import load_your_data
-from churn_src.feature_engineer import ChurnPreprocessor
-from churn_src.models import extract_models
-from churn_src.results_tracker import load_best_params, save_best_params
-from churn_src.visualization import (
-    build_Confusion_matrix,
-    dvc_visualizations,
-    learning_curves)
+from models import extract_models
+from results_tracker import load_best_params, save_best_params
+from visualization import build_Confusion_matrix, dvc_visualizations, learning_curves
 
 # 1. MLflow: The experiment tracking library
 #    - mlflow: Main module for logging parameters, metrics, and models
 #    - mlflow.sklearn: Special module for logging scikit-learn models
 #    - mlflow.xgboost: Special module for logging XGBoost models
 
-
-# In essence I don't need this coz my helper functions are not
-# in folder coz the sys.append check folders
-sys.path.append(str(Path(__file__).parent))
-
-
 # 15. Get the tracking URI from environment, or use default
 # - os.getenv("KEY", "default"): If KEY doesn't exist, use "default"
 # This allows you to override with a remote server (e.g., http://mlflow-server:5000)
-tracking_uri = os.getenv("MLFLOW_TRACKING_URI", "http://localhost:5000")
+tracking_uri = os.getenv("MLFLOW_TRACKING_URI", "http://127.0.0.1:5000/")
 
 # 16. Set the tracking URI for MLflow
 #     - All future MLflow calls will use this URI
@@ -67,7 +58,7 @@ parser = argparse.ArgumentParser(description="Train an ML model")
 #     - default="configs/master_config.yaml": If not provided, use this
 #     - help: Description shown when user runs --help
 parser.add_argument(
-    "--config", type=str, default="/params.yaml", help="Path to the master config file"
+    "--config", type=str, default="params.yaml", help="Path to the master config file"
 )
 
 # 19. Add --model argument (REQUIRED)
@@ -91,6 +82,10 @@ parser.add_argument(
     default="search",
     help="'train' for single model, 'search' for hyperparameter search",
 )
+parser.add_argument("--x_train", default="processed_data/x_train.csv")
+parser.add_argument("--y_train", default="processed_data/y_train.csv")
+parser.add_argument("--x_test", default="processed_data/x_test.csv")
+parser.add_argument("--y_test", default="processed_data/y_test.csv")
 
 # 21. Parse the arguments
 #     - This reads what the user typed on the command line
@@ -102,19 +97,12 @@ args = parser.parse_args()
 
 
 # 4. Load your data (tracked by DVC)
-x_train, y_train, x_test, y_test = load_your_data()
+root = Path(__file__).resolve().parent.parent
 
-preprocessor = ChurnPreprocessor()
-
-X_engineered_train = pd.read_csv(Path('processed_data/x_train'),index_col='security_no')
-
-y_train = pd.read_csv(Path('processed_data/y_train'),index_col='security_no')
-
-preprocessor.save("processed/preprocessor.pkl")
-
-X_engineered_test = pd.read_csv(Path('processed_data/x_test'),index_col='security_no')
-
-y_test = pd.read_csv(Path('processed_data/y_test'),index_col='security_no')
+X_engineered_train = pd.read_csv(root / args.x_train, index_col="security_no")
+y_train = pd.read_csv(root / args.y_train, index_col="security_no")
+X_engineered_test = pd.read_csv(root / args.x_test, index_col="security_no")
+y_test = pd.read_csv(root / args.y_test, index_col="security_no")
 
 
 def load_param(args):
@@ -122,7 +110,7 @@ def load_param(args):
     #  - master_config["models"] is a dictionary of all models
     #  - If the user asks for "random_forest" but it's not in the config, ERROR
     try:
-        with open(args.config) as y:
+        with open(args) as y:
             # This produces a dictionary
             master_config = yaml.safe_load(y)
             return master_config
@@ -141,7 +129,7 @@ def load_param(args):
 
 def main():
     # Load parameters
-    config = load_param(args)
+    config = load_param(args.config)
     model_config = config["models"][args.model]
     # Based on the design pattern of .yaml "script" active_model should not be here
 
@@ -198,14 +186,13 @@ def main():
                 n_jobs=Global_config["n_jobs"],
             )
 
-            model.fit(X_engineered_train, y_train)
+            random_search.fit(X_engineered_train, y_train)
 
             # - Get the best results
             best_params = random_search.best_params_
             best_score = random_search.best_score_
             # 54. Evaluate the best model on the test set
             best_model = random_search.best_estimator_
-
 
             # 51. Print the best results (user feedback)
             print(f"\n🏆 Best CV Score: {best_score:.4f}")
@@ -222,7 +209,7 @@ def main():
                     "n_jobs": Global_config["n_jobs"],
                 }
             )
-            
+
             for key, value in best_params.items():
                 mlflow.log_param(f"best_{key}", value)
 
@@ -234,7 +221,7 @@ def main():
             mlflow.log_metric("f1_score", best_score)
             mlflow.set_tag("stage", "experimentation")
             mlflow.sklearn.log_model(best_model, f"{args.model}_model_{num}")
-            
+
             # ------------------------------------------------------------
             # 🔥 CRITICAL: Save the best parameters to a file
             # ------------------------------------------------------------
@@ -243,7 +230,7 @@ def main():
                 best_params=best_params,
                 best_score=best_score,
                 run_id=run.info.run_id,
-                num = num
+                num=num,
             )
 
             # 56. Print success message
@@ -262,7 +249,7 @@ def main():
         # ------------------------------------------------------------
         # 🔥 CRITICAL: Load the best parameters from the search
         # ------------------------------------------------------------
-        saved_params = load_best_params(args.model , num)
+        saved_params, mlflow_id = load_best_params(args.model, num)
 
         try:
             # Use the best parameters from the search!
@@ -291,14 +278,17 @@ def main():
 
             with live:
                 # Create and train the model
-                model = extract_models(args.model, train_params)
-                model.fit(X_engineered_train, y_train)
+                model = mlflow.sklearn.load_model(
+                    f"runs:/{mlflow_id}/{args.model}_model_{num}"
+                )
 
                 train_predictions = model.predict(X_engineered_train)
                 y_pred_test = model.predict(X_engineered_test)
 
                 f1 = metrics.f1_score(y_train, train_predictions, average="weighted")
-                precision = metrics.precision_score(y_train, train_predictions, average="weighted")
+                precision = metrics.precision_score(
+                    y_train, train_predictions, average="weighted"
+                )
                 recall = metrics.recall_score(y_train, train_predictions, average="weighted")
 
                 cmap = build_Confusion_matrix(y_train, train_predictions)
@@ -308,20 +298,45 @@ def main():
                 live.log_image(val=lc, name="learning_curve_train.png")
 
                 if hasattr(model, "predict_proba"):
-                    y_train_proba= model.predict_proba(X_engineered_train)[:, 1]
+                    y_train_proba = model.predict_proba(X_engineered_train)[:, 1]
                     test_predictions = model.predict_proba(X_engineered_test)[:, 1]
-                    y_train_proba = y_train_proba.astype(float) if hasattr(y_train_proba, "astype") else y_train_proba
-                    test_predictions = test_predictions.astype(float) if hasattr(test_predictions, "astype") else test_predictions
+                    y_train_proba = (
+                        y_train_proba.astype(float)
+                        if hasattr(y_train_proba, "astype")
+                        else y_train_proba
+                    )
+                    test_predictions = (
+                        test_predictions.astype(float)
+                        if hasattr(test_predictions, "astype")
+                        else test_predictions
+                    )
                 elif hasattr(model, "decision_function"):
                     y_train_proba = model.decision_function(X_engineered_train)
                     test_predictions = model.decision_function(X_engineered_test)
-                    y_train_proba = y_train_proba.astype(float) if hasattr(y_train_proba, "astype") else y_train_proba
-                    test_predictions = test_predictions.astype(float) if hasattr(test_predictions, "astype") else test_predictions
+                    y_train_proba = (
+                        y_train_proba.astype(float)
+                        if hasattr(y_train_proba, "astype")
+                        else y_train_proba
+                    )
+                    test_predictions = (
+                        test_predictions.astype(float)
+                        if hasattr(test_predictions, "astype")
+                        else test_predictions
+                    )
                 else:
-                    raise ValueError("Model does not have predict_proba or decision_function method.")
+                    raise ValueError(
+                        "Model does not have predict_proba or decision_function method."
+                    )
 
-                live.log_sklearn_plot("roc", y_train, y_train_proba, name="roc_curve_train.png")
-                live.log_sklearn_plot("precision_recall", y_train, y_train_proba, name="precision_recall_curve_train.png")
+                live.log_sklearn_plot(
+                    "roc", y_train, y_train_proba, name="roc_curve_train.png"
+                )
+                live.log_sklearn_plot(
+                    "precision_recall",
+                    y_train,
+                    y_train_proba,
+                    name="precision_recall_curve_train.png",
+                )
 
                 dvc_img = dvc_visualizations(y_train, y_train_proba)
                 live.log_image(val=dvc_img, name="dvc_visualizations_train.png")
@@ -341,7 +356,9 @@ def main():
 
                 test_roc_auc = metrics.roc_auc_score(y_test, test_predictions)
                 test_f1 = metrics.f1_score(y_test, y_pred_test, average="weighted")
-                test_precision = metrics.precision_score(y_test, y_pred_test, average="weighted")
+                test_precision = metrics.precision_score(
+                    y_test, y_pred_test, average="weighted"
+                )
                 test_recall = metrics.recall_score(y_test, y_pred_test, average="weighted")
 
                 test_metrics = {

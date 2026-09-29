@@ -1,4 +1,4 @@
-import os
+import argparse
 import pickle
 from pathlib import Path
 
@@ -6,7 +6,6 @@ import numpy as np
 import pandas as pd
 from sklearn.metrics import mutual_info_score
 from sklearn.preprocessing import OneHotEncoder
-from churn_src.data_loader import load_data
 
 
 class ChurnPreprocessor:
@@ -35,10 +34,19 @@ class ChurnPreprocessor:
     def _clean(self, x_df: pd.DataFrame) -> pd.DataFrame:
         df = x_df.copy()
 
-        positive = ["Reasonable Price", "Products always in Stock",
-                    "User Friendly Website", "Quality Customer Care"]
-        negative = ["Too many ads", "No reason specified", "Poor Product Quality",
-                    "Poor Customer Service", "Poor Website"]
+        positive = [
+            "Reasonable Price",
+            "Products always in Stock",
+            "User Friendly Website",
+            "Quality Customer Care",
+        ]
+        negative = [
+            "Too many ads",
+            "No reason specified",
+            "Poor Product Quality",
+            "Poor Customer Service",
+            "Poor Website",
+        ]
         neutral = ["No reason specified"]
         mapping = {cat: "positive" for cat in positive}
         mapping.update({cat: "negative" for cat in negative})
@@ -57,8 +65,12 @@ class ChurnPreprocessor:
         df["days_since_last_login"] = df["days_since_last_login"].where(
             df["days_since_last_login"] >= 0, np.nan
         )
-        df["medium_of_operation"] = df["medium_of_operation"].replace("?", np.nan).fillna("Smartphone")
-        df["avg_frequency_login_days"] = pd.to_numeric(df["avg_frequency_login_days"], errors="coerce")
+        df["medium_of_operation"] = (
+            df["medium_of_operation"].replace("?", np.nan).fillna("Smartphone")
+        )
+        df["avg_frequency_login_days"] = pd.to_numeric(
+            df["avg_frequency_login_days"], errors="coerce"
+        )
         df["avg_frequency_login_days"] = df["avg_frequency_login_days"].where(
             df["avg_frequency_login_days"] >= 0, np.nan
         )
@@ -66,7 +78,7 @@ class ChurnPreprocessor:
         df["joining_month"] = df["joining_date"].dt.strftime("%m").astype(int)
         df["joining_year"] = df["joining_date"].dt.strftime("%Y").astype(int)
 
-        return df.drop(["joining_date", "referral_id"], axis=1)
+        return df.drop(["joining_date", "referral_id", "last_visit_time"], axis=1)
 
     # ---------------- fit: learn everything from training data ----------------
 
@@ -77,10 +89,12 @@ class ChurnPreprocessor:
         df = self._clean(x_df)
 
         # bin edges
-        _, self.freq_bins = pd.qcut(df["avg_frequency_login_days"], q=5, labels=False,
-                                    retbins=True, duplicates="drop")
-        _, self.time_bins = pd.qcut(df["avg_time_spent"], q=5, labels=False,
-                                    retbins=True, duplicates="drop")
+        _, self.freq_bins = pd.qcut(
+            df["avg_frequency_login_days"], q=5, labels=False, retbins=True, duplicates="drop"
+        )
+        _, self.time_bins = pd.qcut(
+            df["avg_time_spent"], q=5, labels=False, retbins=True, duplicates="drop"
+        )
         _, self.age_bins = pd.cut(df["age"], bins=6, labels=False, retbins=True)
 
         df = self._apply_bins(df)
@@ -99,8 +113,7 @@ class ChurnPreprocessor:
         target_col = y_df.columns[0]
         corr = pd.concat([df, y_df], axis=1).corr(numeric_only=True)
         self.most_correlated = [
-            c for c in corr.columns
-            if abs(corr.loc[c, target_col]) >= 0.2 and c != target_col
+            c for c in corr.columns if abs(corr.loc[c, target_col]) >= 0.2 and c != target_col
         ]
 
         y1 = y_df.copy().squeeze()
@@ -117,7 +130,9 @@ class ChurnPreprocessor:
         self.categorical_cols = list(
             selected.select_dtypes(include=["object", "category"]).columns
         )
-        self.encoder = OneHotEncoder(drop="first", sparse_output=False, handle_unknown="ignore")
+        self.encoder = OneHotEncoder(
+            drop="first", sparse_output=False, handle_unknown="ignore"
+        )
         self.encoder.fit(selected[self.categorical_cols])
 
         self.is_fitted = True
@@ -149,12 +164,17 @@ class ChurnPreprocessor:
 
     def _apply_bins(self, df: pd.DataFrame) -> pd.DataFrame:
         df["avg_frequency_login_days_binned"] = pd.cut(
-            df["avg_frequency_login_days"], bins=self.freq_bins, labels=False, include_lowest=True
+            df["avg_frequency_login_days"],
+            bins=self.freq_bins,
+            labels=False,
+            include_lowest=True,
         )
         df["avg_time_spent_binned"] = pd.cut(
             df["avg_time_spent"], bins=self.time_bins, labels=False, include_lowest=True
         )
-        df["age_binned"] = pd.cut(df["age"], bins=self.age_bins, labels=False, include_lowest=True)
+        df["age_binned"] = pd.cut(
+            df["age"], bins=self.age_bins, labels=False, include_lowest=True
+        )
         return df
 
     def _to_category(self, df: pd.DataFrame) -> pd.DataFrame:
@@ -175,8 +195,10 @@ class ChurnPreprocessor:
         selected = pd.concat([numerical, df[self.selected_categorical]], axis=1)
         for column in ["avg_transaction_value", "points_in_wallet"]:
             if column in selected.columns:
-                selected[column] = np.sign(selected[column]) * np.log1p(np.abs(selected[column]))
-        return selected.drop(columns=["last_visit_time"], errors="ignore")
+                selected[column] = np.sign(selected[column]) * np.log1p(
+                    np.abs(selected[column])
+                )
+        return selected
 
     # ---------------- persistence — replaces your artifacts.pkl handling ----------------
 
@@ -191,20 +213,38 @@ class ChurnPreprocessor:
         with open(path, "rb") as f:
             return pickle.load(f)
 
-if __name__ == "__main__":
-    x_train, y_train, x_test, y_test = load_data()
 
-    root = Path(__file__).parent.parent()
-    path = os.path.join(root,'processed_data')
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Preprocess")
+
+    parser.add_argument("--x-train", default="train_test/x_train.csv")
+    parser.add_argument("--y-train", default="train_test/y_train.csv")
+    parser.add_argument("--x-test", default="train_test/x_test.csv")
+    parser.add_argument("--y-test", default="train_test/y_test.csv")
+
+    args = parser.parse_args()
+
+    root = (
+        Path(__file__).resolve().parent.parent
+    )  # .parent.parent, not .parent.parent() — parent is a property, not a callable
+    out_dir = root / "processed_data"
+    out_dir.mkdir(
+        parents=True, exist_ok=True
+    )  # this dir needs to exist before any to_csv() below
 
     preprocessor = ChurnPreprocessor()
 
-    X_engineered_train = preprocessor.fit_transform(x_train, y_train)
-    X_engineered_train.to_csv(os.path.join(path,'x_train'))
-    y_train.to_csv(os.path.join(path,'y_train'))
+    x_train = pd.read_csv(root / args.x_train, index_col="security_no")
+    y_train = pd.read_csv(root / args.y_train, index_col="security_no")
+    x_test = pd.read_csv(root / args.x_test, index_col="security_no")
+    y_test = pd.read_csv(root / args.y_test, index_col="security_no")
 
-    preprocessor.save("processed/preprocessor.pkl")
+    X_engineered_train = preprocessor.fit_transform(x_train, y_train)
+    X_engineered_train.to_csv(out_dir / "x_train.csv")
+    y_train.to_csv(out_dir / "y_train.csv")
+
+    preprocessor.save(str(root / "processed" / "preprocessor.pkl"))
 
     X_engineered_test = preprocessor.transform(x_test)
-    X_engineered_test.to_csv(os.path.join(path,'x_test'))
-    y_test.to_csv(os.path.join(path,'y_test'))
+    X_engineered_test.to_csv(out_dir / "x_test.csv")
+    y_test.to_csv(out_dir / "y_test.csv")

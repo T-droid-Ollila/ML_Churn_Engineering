@@ -13,6 +13,7 @@ style:
     black .
     flake8
     isort .
+    pyupgrade
 
 .PHONY: test-data
 test-data:

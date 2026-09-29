@@ -16,7 +16,7 @@ def load_data(test_size=0.2):
     Loads the dataset and splits into train/test.
     """
     root = (
-        Path(__file__).resolve().parent
+        Path(__file__).resolve().parent.parent
     )  # --> if churn_data is to be placed in another folder use another parent
     new_path = os.path.join(root, "churn_data", "train_churn.csv")
     df = pd.read_csv(new_path)
@@ -35,12 +35,16 @@ def load_data(test_size=0.2):
         X, y, test_size=test_size, stratify=y, random_state=42
     )
 
-    processed_path = Path('train_test')
-    processed_path.parent.mkdir(exist_ok=True , parents=True)
+    processed_path = Path("train_test")
+    processed_path.mkdir(exist_ok=True, parents=True)
 
     x_train.to_csv(os.path.join(processed_path, "x_train.csv"))
     x_test.to_csv(os.path.join(processed_path, "x_test.csv"))
     y_train.to_csv(os.path.join(processed_path, "y_train.csv"))
-    y_test.to_csv(os.path.join(processed_path, "y_train.csv"))
+    y_test.to_csv(os.path.join(processed_path, "y_test.csv"))
 
     return x_train, y_train, x_test, y_test
+
+
+if __name__ == "__main__":
+    load_data()

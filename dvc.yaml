@@ -1,0 +1,9 @@
+stages:
+  load_data:
+    cmd: python churn_src/data_loader.py
+  preprocess:
+    cmd: python churn_src/feature_engineer.py
+  search:
+    cmd: python churn_src/train.py --model random_forest --mode search
+  train:
+    cmd: python churn_src/train.py --mode train

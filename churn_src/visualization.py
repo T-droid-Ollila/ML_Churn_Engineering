@@ -1,6 +1,5 @@
-import matplotlib as plt
+import matplotlib.pyplot as plt
 import numpy as np
-import seaborn as sns
 from mlflow.entities import Dataset
 from sklearn.metrics import confusion_matrix, precision_recall_curve, roc_curve
 from sklearn.model_selection import learning_curve
@@ -61,16 +60,17 @@ def build_Confusion_matrix(target, pred):
 
     # I decided to use SEABORN to see the results of my experiments but I can
     # switch between plt or seaborn
-    sns.heatmap(confmat, annot=True, fmt="d", ax=ax)
-    # Define how the matrix is built
     for i in range(confmat.shape[0]):
         for j in range(confmat.shape[1]):
-            ax.text(x=i, y=j, s=confmat[i, j], va="center", ha="center")
-    ax.axis.set_ticks_bottom()
-    ax.title("Confusion Matrix")
-    ax.get_xlabel("True label")
-    ax.get_ylabel("Pred label")
-    ax.legend(["0", "1"])
+            ax.text(x=j, y=i, s=confmat[i, j], va="center", ha="center")
+
+    ax.set_title("Confusion Matrix")
+    ax.set_xlabel("Predicted label")
+    ax.set_ylabel("True label")
+    ax.set_xticks([0, 1])
+    ax.set_yticks([0, 1])
+    ax.set_xticklabels(["0", "1"])
+    ax.set_yticklabels(["0", "1"])
 
     return fig
 

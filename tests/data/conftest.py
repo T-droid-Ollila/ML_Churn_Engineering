@@ -4,8 +4,6 @@ import great_expectations as ge
 import pandas as pd
 import pytest
 
-# sys.path.insert(0, str(Path(__file__).parent.parent.parent))
-
 
 def pytest_addoption(parser):
     # parser arguments
@@ -18,31 +16,35 @@ def pytest_addoption(parser):
 
 
 @pytest.fixture(scope="session")
-def expect_data(request):
+def context():
+    return ge.get_context()
+
+
+@pytest.fixture(scope="session")
+def expect_data(request, context):
     # Load the dataset
 
     dataset_loc = request.config.getoption("--dataset-loc")
 
     # Initialize Great Expectations context
-    # Read the dataset into a pandas DataFrame
-    context = ge.get_context()
+    # Read the dataset into a pandas Dataframe
 
     # Convert to Path object
     dataset_path = Path(dataset_loc)
 
     if dataset_loc is None:
         raise ValueError("Please provide the path to the dataset using --dataset-loc option.")
-    # root_logger.info("Please provide the path to the dataset using --dataset-loc option.")
 
     # Load the dataset using Great Expectations
     # Method 1: If you have a DataContext
+    datasource_name = "my_pandas_datasource"
+    asset_name = "my_data_asset"
 
     ge_df = pd.read_csv(dataset_path)
     # Define source , first with context to give us access
-    df_source = context.data_sources.add_pandas(name="my_pandas_datasource")
-    data_asset = df_source.add_dataframe_asset(name="my_data_asset")
-    data_batch = data_asset.add_batch_definition_whole_dataframe(name="Whole file batch")
+    df_source = context.sources.add_pandas(name=datasource_name)
+    data_asset = df_source.add_dataframe_asset(name=asset_name)
     # Convert the DataFrame to a Great Expectations DataFrame
-    batch = data_batch.get_batch(batch_parameters={"dataframe": ge_df})
+    batch = data_asset.build_batch_request(dataframe=ge_df)
 
     return batch

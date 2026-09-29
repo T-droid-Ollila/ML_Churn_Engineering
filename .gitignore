@@ -2,6 +2,12 @@
 \churn_data
 \train_test
 \virtual
-\vscode
-\.dvc
+\processed_data
+\processed
+\logs
+.vscode/
+.dvc/
+.dvcignore
 \__pycache__
+dvc.lock
+\mlflow.db
