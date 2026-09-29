@@ -1,0 +1,6 @@
+schema: '2.0'
+stages:
+  load_data:
+    cmd: python churn_src/data_loader.py
+  preprocess:
+    cmd: python churn_src/feature_engineer.py

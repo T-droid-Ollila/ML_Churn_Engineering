@@ -1,4 +1,3 @@
-\processed_train_test
 \churn_data
 \train_test
 \virtual
@@ -6,8 +5,7 @@
 \processed
 \logs
 .vscode/
-.dvc/
 .dvcignore
-\__pycache__
-dvc.lock
+__pycache__
 \mlflow.db
+.dvc/
