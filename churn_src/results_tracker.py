@@ -20,13 +20,13 @@ def save_best_params(
         The MLflow run ID
     """
     # Create the results directory if it doesn't exist
-    results_dir = Path("results")
-    results_dir.mkdir(exist_ok=True)
 
-    # Create the best_params file
+    root = Path(__file__).resolve().parent.parent
+    results_dir = root / "results"
+
     filepath = results_dir / model_name / f"exp_{num}.json"
+    filepath.parent.mkdir(exist_ok=True, parents=True)  # parent, not the file path itself
 
-    # Save the data
     data = {
         "model_name": model_name,
         "best_params": best_params,

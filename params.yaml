@@ -1,6 +1,6 @@
 search:
   cv: 5
-  n_iter:
+  n_iter: 10
   scoring: f1
   n_jobs: -1
 
@@ -19,5 +19,5 @@ models:
     params:
       max_depth:  [2, 12, 22, 32, 42, 52, 62, 72, 82, 92]
       min_samples_split:  [5, 10, 15, 20, 25, 30, 40, 50]
-      max_features: ['sqrt','log2','None']
+      max_features: ['sqrt','log2']
       n_estimators: [0, 50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600, 650, 700, 750, 800, 850, 900, 950]

@@ -6,4 +6,24 @@ stages:
   search:
     cmd: python churn_src/train.py --model random_forest --mode search
   train:
-    cmd: python churn_src/train.py --mode train
+    cmd: python churn_src/train.py --model random_forest --mode train
+metrics:
+- evaluation/metrics.json
+plots:
+- evaluation/plots/metrics:
+    x: step
+- evaluation/plots/images
+- evaluation/plots/sklearn/roc_curve_train.png.json:
+    template: simple
+    x: fpr
+    y: tpr
+    title: Receiver operating characteristic (ROC)
+    x_label: False Positive Rate
+    y_label: True Positive Rate
+- evaluation/plots/sklearn/precision_recall_curve_train.png.json:
+    template: simple
+    x: recall
+    y: precision
+    title: Precision-Recall Curve
+    x_label: Recall
+    y_label: Precision

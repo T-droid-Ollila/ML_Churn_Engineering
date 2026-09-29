@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import seaborn as sns
 from mlflow.entities import Dataset
 from sklearn.metrics import confusion_matrix, precision_recall_curve, roc_curve
 from sklearn.model_selection import learning_curve
@@ -34,17 +35,19 @@ def learning_curves(model: str, X_train: Dataset, y_train):
     pos_train_scores = -np.mean(train_scores, axis=1)
     pos_cross_val_scores = -np.mean(cross_val_scores, axis=1)
     # Plotting the learning curves
-    plt.figure(figsize=(10, 6))
-    plt.plot(train_sizes, pos_train_scores, label="Training Log Loss")
-    plt.plot(train_sizes, pos_cross_val_scores, label="Cross Validation Log Loss")
-    plt.title("Number of examples vs. train and CV Log Losses")
-    plt.xlabel("Total number of training and cv examples")
-    plt.ylabel("Log Loss")
-    plt.legend(loc="lower right")
-    plt.show()
-    plt.grid(True)
+    fig, ax = plt.subplots(figsize=(10, 10))
+    sns.lineplot(x=train_sizes, y=pos_train_scores, ax=ax, label="Training Log Loss")
+    sns.lineplot(
+        x=train_sizes, y=pos_cross_val_scores, ax=ax, label="Cross Validation Log Loss"
+    )
 
-    return plt.figure()
+    ax.set_title("Number of examples vs. train and CV Log Losses")
+    ax.set_xlabel("Total number of training and cv examples")
+    ax.set_ylabel("Log Loss")
+    ax.grid(True)
+    ax.legend()
+
+    return fig
 
 
 # We first define our confusion matrix function

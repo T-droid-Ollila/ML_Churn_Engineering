@@ -1,0 +1,11 @@
+{
+    "model_name": "random_forest",
+    "best_params": {
+        "n_estimators": 500,
+        "min_samples_split": 40,
+        "max_features": "sqrt",
+        "max_depth": 52
+    },
+    "best_score": 0.9379723071720507,
+    "mlflow_run_id": "228d60ee74cd433eb35f5f9e6fd2bb01"
+}

@@ -100,9 +100,9 @@ args = parser.parse_args()
 root = Path(__file__).resolve().parent.parent
 
 X_engineered_train = pd.read_csv(root / args.x_train, index_col="security_no")
-y_train = pd.read_csv(root / args.y_train, index_col="security_no")
+y_train = pd.read_csv(root / args.y_train, index_col="security_no").to_numpy().ravel()
 X_engineered_test = pd.read_csv(root / args.x_test, index_col="security_no")
-y_test = pd.read_csv(root / args.y_test, index_col="security_no")
+y_test = pd.read_csv(root / args.y_test, index_col="security_no").to_numpy().ravel()
 
 
 def load_param(args):
@@ -161,8 +161,6 @@ def main():
         print(f"🔬 Running hyperparameter search for {args.model}")
 
         # 2. Setup MLflow
-        mlflow.create_experiment(f"{model_config['experiment_name']}_{num}")
-
         mlflow.set_experiment(f"{model_config['experiment_name']}_{num}")
 
         with mlflow.start_run() as run:
@@ -238,7 +236,6 @@ def main():
             print(f"✅ SEARCH COMPLETE! Run ID: {run.info.run_id}")
             print("=" * 50)
             # End dvc run
-            run.end()
         mlflow.end_run()  # End the MLflow run
 
     # ------------------------------------------------------------

@@ -4,3 +4,5 @@ stages:
     cmd: python churn_src/data_loader.py
   preprocess:
     cmd: python churn_src/feature_engineer.py
+  train:
+    cmd: python churn_src/train.py --model random_forest --mode train
