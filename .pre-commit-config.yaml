@@ -29,9 +29,11 @@ repos:
 # E501: Line too long
 # W503: Line break occurred before binary operator
 # E226: Missing white space around arithmetic operator
+# E702: Will go back to this
+# E402: Will go back to this
         args: [
           "--max-line-length=100",
-          "--extend-ignore=E226,W503,E712,E402,E501",
+          "--extend-ignore=E226,W503,E501",
           "--exclude=.venv,.git,.tox,dist,doc,build,*.egg,notebooks",
         ]
 

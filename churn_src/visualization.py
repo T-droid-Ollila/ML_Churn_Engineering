@@ -59,6 +59,7 @@ def build_Confusion_matrix(target, pred):
     confmat = confusion_matrix(y_true=target, y_pred=pred)
     # define plots
     fig, ax = plt.subplots(figsize=(6, 6))
+    ax.matshow(confmat, alpha=0.6, cmap=plt.cm.Blues)
     # plt.matshow(confmat , alpha = 0.6 , cmap = plt.cm.Blues)
 
     # I decided to use SEABORN to see the results of my experiments but I can
@@ -66,11 +67,10 @@ def build_Confusion_matrix(target, pred):
     for i in range(confmat.shape[0]):
         for j in range(confmat.shape[1]):
             ax.text(x=j, y=i, s=confmat[i, j], va="center", ha="center")
-
     ax.set_title("Confusion Matrix")
     ax.set_xlabel("Predicted label")
     ax.set_ylabel("True label")
-    ax.set_xticks([0, 1])
+    ax.set_xticks([0, 1])  # explicitly set positions before labeling them
     ax.set_yticks([0, 1])
     ax.set_xticklabels(["0", "1"])
     ax.set_yticklabels(["0", "1"])

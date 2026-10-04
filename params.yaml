@@ -11,7 +11,7 @@ models:
     params:
       max_depth:  [2, 12, 22, 32, 42, 52, 62, 72, 82, 92]
       min_samples_split:  [5, 10, 15, 20, 25, 30, 40, 50]
-      max_features: ['sqrt','log2','None']
+      max_features: ['sqrt','log2']
       criterion:  ['gini' , 'entropy']
   random_forest:
     experiment_name: forest_exp
@@ -20,4 +20,11 @@ models:
       max_depth:  [2, 12, 22, 32, 42, 52, 62, 72, 82, 92]
       min_samples_split:  [5, 10, 15, 20, 25, 30, 40, 50]
       max_features: ['sqrt','log2']
-      n_estimators: [0, 50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600, 650, 700, 750, 800, 850, 900, 950]
+      n_estimators: [50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600, 650, 700, 750, 800, 850, 900, 950]
+  xgboost:
+    experiment_name: boost_exp
+    enabled: true
+    params:
+      learning_rate: [1e-05, 0.0020080000000000002, 0.004006, 0.006004000000000001, 0.008002, 0.01]
+      max_depth: [5, 10, 15, 20, 25, 30, 40, 50,62,78,84,96,98]
+      n_estimators: [50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600, 650, 700, 750, 800, 850, 900, 950]

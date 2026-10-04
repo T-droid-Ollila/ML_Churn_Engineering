@@ -19,22 +19,21 @@ import pandas as pd
 # 2. yaml: Reads the configuration file
 # - Converts your .yaml file into a Python dictionary
 import yaml
+
+# Customizable libraries
+from config import root_logger
 from dvclive import Live
+from models import extract_models
+from results_tracker import load_best_params, save_best_params
 
 # metrics
 from sklearn import metrics
 
 # models
 from sklearn.model_selection import RandomizedSearchCV
+from visualization import build_Confusion_matrix, dvc_visualizations, learning_curves
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-
-from config import root_logger
-
-# Customizable libraries
-from models import extract_models
-from results_tracker import load_best_params, save_best_params
-from visualization import build_Confusion_matrix, dvc_visualizations, learning_curves
 
 # 1. MLflow: The experiment tracking library
 #    - mlflow: Main module for logging parameters, metrics, and models
@@ -154,7 +153,7 @@ def main():
     # ------------------------------------------------------------
     # SECTION 6: MODE 1 - SINGLE MODEL TRAINING
     # ------------------------------------------------------------
-    num = 1  # This is the experiment number, you can change it or make it dynamic
+    num = 7  # This is the experiment number, you can change it or make it dynamic
 
     if args.mode == "search":
 

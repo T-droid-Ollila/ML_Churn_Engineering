@@ -32,7 +32,7 @@ def extract_models(model: str, parameters: dict):
 
     """
     if model.lower() == "random_forest":
-        return RandomForestClassifier(**parameters)
+        return RandomForestClassifier(**parameters, oob_score=True)
     elif model.lower() == "xgboost":
         return XGBClassifier(**parameters)
     elif model.lower() == "logistic_regression":
