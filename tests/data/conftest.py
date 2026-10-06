@@ -10,7 +10,8 @@ def pytest_addoption(parser):
     parser.addoption(
         "--dataset-loc",
         action="store",
-        default="churn_data/train_churn.csv",
+        required=True,
+        default="churn_data/test_churn.csv",
         help="Path to the dataset",
     )
 

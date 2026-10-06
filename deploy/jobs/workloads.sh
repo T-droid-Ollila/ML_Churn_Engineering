@@ -9,17 +9,16 @@ export RUN_ID=$(python -c "import os; from churn_src import results_tracker; d =
 # File for storing metrics
 export RESULTS_FILE= "results/evaluation.json"
 # Test data
-export DATASET = "Customer_transactions.csv"
+export DATASET = "C:\\Users\\Simon\\Downloads\\customer_membership_transactions_20000.csv"
+
 export DATASET_LOC = "churn_data/test_churn.csv"
+python -m pytest --dataset-loc=$DATASET_LOC tests/data --verbose --disable-warnings
 
-python -m pytest --dataset-loc=$DATASET tests/data --verbose --disable-warnings > $DATASET
+python churn_src/evaluate.py "$DATASET_LOC" "$RUN_ID" "$MLFLOW_SERVER"
 
-python churn_src/evaluate.py \
-    --validation_path "$DATASET_LOC" \
-    --run_id "$RUN_ID" \
+python -m pytest --dataset-loc=$DATASET tests/data --verbose --disable-warnings
+
+python churn_src/predict.py\
+    --model_path "artifacts/prod_model/model.pkl" \
+    --input_path "$DATASET" \
     --output_path "$RESULTS_FILE"
-
-# python churn_src/predict.py\
-#     --model_path "prod_model/model.pkl" \
-#     --input_path "$DATASET" \
-#     --output_path "$RESULTS_FILE"

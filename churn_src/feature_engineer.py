@@ -243,7 +243,7 @@ if __name__ == "__main__":
     X_engineered_train.to_csv(out_dir / "x_train.csv")
     y_train.to_csv(out_dir / "y_train.csv")
 
-    preprocessor.save(str(root / "processed" / "preprocessor.pkl"))
+    preprocessor.save(str(root / "artifacts" / "processed" / "preprocessor.pkl"))
 
     X_engineered_test = preprocessor.transform(x_test)
     X_engineered_test.to_csv(out_dir / "x_test.csv")

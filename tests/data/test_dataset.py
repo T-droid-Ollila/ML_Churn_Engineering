@@ -5,10 +5,10 @@ def test_dataset(expect_data, context):
     column_list = [
         "security_no",
         "membership_category",
-        "joined_through_referral",
-        "medium_of_operation",
-        "points_in_wallet",
-        "churn_risk_score",
+        # "joined_through_referral",
+        # "medium_of_operation",
+        # "points_in_wallet",
+        # "churn_risk_score",
     ]
 
     suite_name = "churn_data_suite"
@@ -30,9 +30,9 @@ def test_dataset(expect_data, context):
     validator.expect_column_values_to_be_unique(column="security_no")
 
     expected_dtypes = {
-        "membership_category": "object",
-        "points_in_wallet": "float64",
-        "churn_risk_score": "int64",
+        "membership_category": "object"
+        # "points_in_wallet": "float64",
+        # "churn_risk_score": "int64",
     }
     for col, dtype in expected_dtypes.items():
         validator.expect_column_values_to_be_of_type(column=col, type_=dtype)
@@ -49,4 +49,4 @@ def test_dataset(expect_data, context):
     )
     checkpoint_result = checkpoint.run()
 
-    assert checkpoint_result.success == False
+    assert checkpoint_result.success

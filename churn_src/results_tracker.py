@@ -64,4 +64,4 @@ def load_best_params(model_name: str, num: int):
     with open(filepath) as f:
         data = json.load(f)
 
-    return data["best_params"], data["mlflow_run_id"]
+    return data["mlflow_run_id"]

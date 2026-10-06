@@ -2,7 +2,7 @@
 \train_test
 \virtual
 \processed_data
-\processed
+artifacts/
 \logs
 .vscode/
 .dvcignore
@@ -14,3 +14,4 @@ mlartifacts/
 evaluation/
 mlflow.db
 .dvc.lock
+predictions_output/
