@@ -1,7 +1,3 @@
-
-
-
-
 Learn Ordinal Encoding , mapping , visualizing feature distributions , dealing with unbalanced datasets
 
 Encountering problems along the way such as why is precision so consistently across three different models
@@ -35,3 +31,6 @@ Ask yourself mening of a estimator
 
 
 DVC does provide an option to specify the template/type of visualisation we need but for learning purposes we will not need a template right now , we shall use the ones speficied in our visualizations functions in our visualizations script
+
+<img width="1233" height="615" alt="RAY" src="https://github.com/user-attachments/assets/59c6a7b4-769e-43d3-9612-4a5dc22621af" />
+
