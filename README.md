@@ -36,6 +36,33 @@ DVC does provide an option to specify the template/type of visualisation we need
 
 <img width="1919" height="820" alt="Setting Up Local Remote Storage" src="https://github.com/user-attachments/assets/57848c07-bc17-495b-9d29-bf7d8d2b84ea" />
 
+### Setting Up Google Drive Remote Storage
+
+<img width="1536" height="1024" alt="cff8f784-eaa1-48c9-a2c8-8b2b02280a79" src="https://github.com/user-attachments/assets/d141f94c-9b6b-4c96-91d4-1a339e3ef264" />
+
+To configure your local DVC remote storage using Google Drive, follow these steps to ensure secure authentication and proper synchronization
+
+**Prerequisites:**
+*   A created Google Drive folder.
+*   A service account created via the Google Cloud Console with the necessary permissions.
+*   The path to your service account's JSON key file.
+
+FolderID refers to the ID at the top of the search tab after creating a folder or when you entered into one
+
+Typically it will look like this 
+
+https://drive.google.com/drive/folders/15W2JmKpx8IdwoLEfotwNwupL7Cawx52dLe?dmr=1&ec=wgc-drive-%5Bmodule%5D-foto
+
+.json file is file created after creating a service account and accessing it's keys 
+
+dvc add remote -d gdrive_remote gdrive://folderID
+
+ADD SERVICE ACCOUNT ACCESS STEPS
+dvc remote modify gdrive_remote use_service_account true
+dvc remote modify gdrive_remote --local gdrive_service_account_json_file_path |absolute json file path|
+
+Then :
+dvc push 
 
 <img width="1797" height="875" alt="MLOps CI_CD Continual Learning Workflow" src="https://github.com/user-attachments/assets/3a207954-0973-44ec-8cd1-4cc1ace47be3" />
 
