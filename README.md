@@ -1,7 +1,51 @@
+# GITFOLIO :⚡ ML ENGINEERING
+
+                                                      Design · Develop · Deploy · Iterate
+____________________________________________________________________________________________________________________________________________________________________
+
+## Lessons
+____________________________________________________________________________________________________________________________________________________________________
+Learn how to combine machine learning with software engineering to design, develop, deploy and iterate on production-grade ML applications.
 
 <img width="1979" height="794" alt="Machine Learning Workflow Diagram" src="https://github.com/user-attachments/assets/a7d6a840-c2d0-481e-95cb-fe0587b56d04" />
 
+## Setup
 
+In this project we shall use [RAY](https://www.anyscale.com/)
+Your personal laptop (single machine) will act as the cluster, where one CPU will be the head node and some of the remaining CPU will be the worker nodes.
+
+### **1. Fork and clone**
+- Create a repository by following these instructions: [Create a new repository](https://github.com/new) → name it Preferred-Name → Toggle Add a README file (very important as this creates a main branch    Click Create repository (scroll down)
+
+- Execute the command below in your terminal ( Command prompt or shell )
+
+```
+cd Preferred-Name
+git clone https://T-droid-Ollila/ML_Churn_Engineering.git.
+
+```
+
+Every time a commit is made and you want to push changes made to your created repo , first set up a remote repo of your choice
+
+```
+git remote set-url origin https://github.com/<their-user>/<Preferred-Name>.git
+git push -u origin main
+
+```
+
+### **2. Virtual environment**
+
+```
+$env:PYTHONPATH = "$env:PYTHONPATH;$pwd     # MacOs export PYTHONPATH=$PYTHONPATH:$PWD
+py 3.12 -m venv virtual  # recommend using Python 3.12  # For MacOS python3.12 -m venv .virtual
+virtual\Scripts\activate  # On MacOS source virtual/bin/activate
+python3 -m pip install --upgrade pip setuptools wheel
+python3 -m pip install -r requirements.txt
+pre-commit install
+pre-commit autoupdate
+pip list
+
+```
 
 <img width="1776" height="886" alt="Machine Learning Workflow Pipeline" src="https://github.com/user-attachments/assets/066d22d6-cb8d-4b23-831c-1a5c534513d7" />
 
@@ -43,9 +87,9 @@ DVC does provide an option to specify the template/type of visualisation we need
 To configure your local DVC remote storage using Google Drive, follow these steps to ensure secure authentication and proper synchronization
 
 **Prerequisites:**
-*   A created Google Drive folder.
-*   A service account created via the Google Cloud Console with the necessary permissions.
-*   The path to your service account's JSON key file.
+*   A created Google Drive folder with [google drive account](https://drive.google.com/)
+*   A project in your [google cloud console](https://console.cloud.google.com/).
+*   Client ID and secret obtained from your respective project in the console .
 
 FolderID refers to the ID at the top of the search tab after creating a folder or when you entered into one
 
@@ -55,14 +99,16 @@ https://drive.google.com/drive/folders/15W2JmKpx8IdwoLEfotwNwupL7Cawx52dLe?dmr=1
 
 .json file is file created after creating a service account and accessing it's keys 
 
-dvc add remote -d gdrive_remote gdrive://folderID
+```dvc add remote -d gdrive_remote gdrive://folderID
 
 ADD SERVICE ACCOUNT ACCESS STEPS
 dvc remote modify gdrive_remote use_service_account true
 dvc remote modify gdrive_remote --local gdrive_service_account_json_file_path |absolute json file path|
 
 Then :
-dvc push 
+dvc push
+```
+- For more info on dvc remote storage setup with [Google drive](https://doc.dvc.org/user-guide/data-management/remote-storage/google-drive) and other remote stoarages see the [docs](https://doc.dvc.org/user-guide/data-management/remote-storage)
 
 <img width="1797" height="875" alt="MLOps CI_CD Continual Learning Workflow" src="https://github.com/user-attachments/assets/3a207954-0973-44ec-8cd1-4cc1ace47be3" />
 
