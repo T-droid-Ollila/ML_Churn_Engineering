@@ -146,7 +146,8 @@ churn_src
 ### Predict
 
 ## Production
-https://chatgpt.com/s/m_6ad0a31f27908191bbb47de2454e9bc9
+
+<img width="1400" height="800" alt="Docker, CI_CD, and Ray Clash" src="https://github.com/user-attachments/assets/62ce108e-0dd7-4896-a82a-0d5f770ff103" />
 
 - We shall be deploying this model locally as a containerised job
 
