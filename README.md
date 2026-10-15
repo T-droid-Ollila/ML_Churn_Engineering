@@ -80,10 +80,75 @@ To request access, contact the repository owner and provide the
 Google account that should be authorized.
 
 dvc pull
+```
+### Setting Up Google Drive Remote Storage and retrieve data from remote storage
+
+<img width="1536" height="1024" alt="cff8f784-eaa1-48c9-a2c8-8b2b02280a79" src="https://github.com/user-attachments/assets/d141f94c-9b6b-4c96-91d4-1a339e3ef264" />
+
+To configure your local DVC remote storage using Google Drive, follow these steps to ensure secure authentication and proper synchronization
+
+**Prerequisites:**
+*   A created Google Drive folder with [google drive account](https://drive.google.com/)
+*   A project in your [google cloud console](https://console.cloud.google.com/).
+*   Client ID and secret obtained from your respective project in the console .
+
+FolderID refers to the ID at the top of the search tab after creating a folder or when you entered into one
+
+Typically it will look like this 
+
+**Google Drive folder URL:** `https://drive.google.com/drive/folders/15W2JmKpx8IdwoLEfotwNwupL7Cawx52dLe`
+
+**Google Drive Folder ID:**
+
+`15W2JmKpx8IdwoLEfotwNwupL7Cawx52dLe`
+
+<img width="1919" height="820" alt="Setting Up Local Remote Storage" src="https://github.com/user-attachments/assets/57848c07-bc17-495b-9d29-bf7d8d2b84ea" />
+
+- Ensure project setup has **credentials** and under **API and Services** are both created and enabled.
+- select OAuth client ID. Choose **Desktop app** and click Create to proceed with a default client name.
+- 
+.json file is file created after creating a **credentials** and accessing **ID** and **secret**
 
 ```
+dvc add remote -d gdrive_remote gdrive://folderID
+
+# Use the commands to set the credentials 
+dvc remote modify --local myremote gdrive_client_id 'client-id'
+dvc remote modify --local myremote gdrive_client_secret 'client-secret'
+
+# Then :
+dvc push
+```
+- For more info on dvc remote storage setup with [Google drive](https://doc.dvc.org/user-guide/data-management/remote-storage/google-drive) and other remote stoarages see the [docs](https://doc.dvc.org/user-guide/data-management/remote-storage)
+
+### Scripts
+```
+churn_src
+├── config.py
+├── data.py
+├── evaluate.py
+├── models.py
+├── predict.py
+├── serve.py
+├── train.py
+├── tune.py
+└── utils.py
+```
+### Setup experiment tracking
+- We'll use [MLflow](https://mlflow.org/) to track our experiments and store our models and the MLflow Tracking UI to view our experiments. We have been saving our experiments to a local directory but note that in an actual production setting, we would have a central location to store all of our experiments. It's easy/inexpensive to spin up your own MLflow server for all of your team members to track their experiments on
 
 <img width="1776" height="886" alt="Machine Learning Workflow Pipeline" src="https://github.com/user-attachments/assets/066d22d6-cb8d-4b23-831c-1a5c534513d7" />
+
+### Training 
+
+### Evaluation
+
+### Predict
+
+## Production
+https://chatgpt.com/s/m_6ad0a31f27908191bbb47de2454e9bc9
+
+- We shall be deploying this model locally as a containerised job
 
 Learn Ordinal Encoding , mapping , visualizing feature distributions , dealing with unbalanced datasets
 
@@ -106,53 +171,13 @@ Nested CV estimates the generalization error of the underlying model and its (hy
 
 A variable param_opt which is a dict for optimizing hyperparameter
 
-<img width="1600" height="900" alt="Docker_converted" src="https://github.com/user-attachments/assets/c5afe8f5-3425-48f5-be3b-75fa46626e8f" />
-
 RandomSearch allows much more hyperparameter values , and faster searching tus saving on time
 
 What is the purpose of n_iter in RandomSearch module ?
 
 DVC does provide an option to specify the template/type of visualisation we need but for we will need a template right now and we shall use the ones specified in our visualizations functions in our visualizations script
 
-<img width="1919" height="820" alt="Setting Up Local Remote Storage" src="https://github.com/user-attachments/assets/57848c07-bc17-495b-9d29-bf7d8d2b84ea" />
-
-### Setting Up Google Drive Remote Storage
-
-<img width="1536" height="1024" alt="cff8f784-eaa1-48c9-a2c8-8b2b02280a79" src="https://github.com/user-attachments/assets/d141f94c-9b6b-4c96-91d4-1a339e3ef264" />
-
-To configure your local DVC remote storage using Google Drive, follow these steps to ensure secure authentication and proper synchronization
-
-**Prerequisites:**
-*   A created Google Drive folder with [google drive account](https://drive.google.com/)
-*   A project in your [google cloud console](https://console.cloud.google.com/).
-*   Client ID and secret obtained from your respective project in the console .
-
-FolderID refers to the ID at the top of the search tab after creating a folder or when you entered into one
-
-Typically it will look like this 
-
-**Google Drive folder URL:** `https://drive.google.com/drive/folders/15W2JmKpx8IdwoLEfotwNwupL7Cawx52dLe`
-
-**Google Drive Folder ID:**
-
-`15W2JmKpx8IdwoLEfotwNwupL7Cawx52dLe`
-
-- Ensure project setup has **credentials** and under **API and Services** are both created and enabled.
-- select OAuth client ID. Choose **Desktop app** and click Create to proceed with a default client name.
-- 
-.json file is file created after creating a **credentials** and accessing **ID** and **secret**
-
-```
-dvc add remote -d gdrive_remote gdrive://folderID
-
-# Use the commands to set the credentials 
-dvc remote modify --local myremote gdrive_client_id 'client-id'
-dvc remote modify --local myremote gdrive_client_secret 'client-secret'
-
-# Then :
-dvc push
-```
-- For more info on dvc remote storage setup with [Google drive](https://doc.dvc.org/user-guide/data-management/remote-storage/google-drive) and other remote stoarages see the [docs](https://doc.dvc.org/user-guide/data-management/remote-storage)
+### CI\CD WITH GITHUB ACTIONS
 
 <img width="1797" height="875" alt="MLOps CI_CD Continual Learning Workflow" src="https://github.com/user-attachments/assets/3a207954-0973-44ec-8cd1-4cc1ace47be3" />
 
@@ -164,7 +189,7 @@ dvc push
 <h2>🌐 Connect With Me</h2>
 
 <p align="left">
-  <a href="www.linkedin.com/in/ollila-simiyu-a9b886363">
+  <a href="https://www.linkedin.com/in/ollila-simiyu-a9b886363/?isSelfProfile=true">
     <img src="https://img.shields.io/badge/LINKEDIN-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn"/>
   </a>
 
