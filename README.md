@@ -68,7 +68,7 @@ py 3.12 -m venv virtual  # recommend using Python 3.12  # For MacOS python3.12 -
 virtual\Scripts\activate  # On MacOS source virtual/bin/activate
 python3 -m pip install --upgrade pip setuptools wheel
 python3 -m pip install -r requirements.txt
-pre-commit install
+pre-commit = 3.8.0 install
 pre-commit autoupdate
 pip list
 
