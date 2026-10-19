@@ -149,7 +149,14 @@ churn_src
 
 <img width="1400" height="800" alt="Docker, CI_CD, and Ray Clash" src="https://github.com/user-attachments/assets/62ce108e-0dd7-4896-a82a-0d5f770ff103" />
 
-- We shall be deploying this model locally as a containerised job
+- **We shall be deploying this model locally as a containerised job.**
+
+ <img width="2057" height="764" alt="Docker Pipeline_ File to Container" src="https://github.com/user-attachments/assets/23cd69ad-7822-4615-bb31-32ad4939811b" />
+
+  ```
+  docker build -t Churn . # The first command looks at the blue print from the dockerfile to build our custom image
+
+  ```
 
 Learn Ordinal Encoding , mapping , visualizing feature distributions , dealing with unbalanced datasets
 
