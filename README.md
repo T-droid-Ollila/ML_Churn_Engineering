@@ -156,6 +156,15 @@ churn_src
   ```
   docker build -t Churn . # The first command looks at the blue print from the dockerfile to build our custom image
 
+  docker run --rm `
+>> --mount "type=bind,source=$($env:DATASET),target=/app/incoming.csv,readonly" `
+>> --mount "type=bind,source=$($PWD.Path)/predictions_output,target=/app/predictions_output" `
+>> first `
+>> python churn_src/predict.py `
+>> /app/artifacts/processed/preprocessor.pkl `
+>> /app/incoming.csv `
+>> /app/artifacts/prod_model/model.pkl
+
   ```
 
 Learn Ordinal Encoding , mapping , visualizing feature distributions , dealing with unbalanced datasets
