@@ -36,32 +36,4 @@ Ask yourself mening of a estimator
 
 DVC does provide an option to specify the template/type of visualisation we need but for learning purposes we will not need a template right now , we shall use the ones speficied in our visualizations functions in our visualizations script
 
-1. FINALIZE predict.py
-          ↓
-2. Verify preprocessing artifacts
-          ↓
-3. Verify model.pkl
-          ↓
-4. Run prediction locally
-          ↓
-5. Verify Ray inference locally
-          ↓
-6. Fix/finalize Dockerfile
-          ↓
-7. docker build
-          ↓
-8. docker run with mounted input/output
-          ↓
-9. Verify predictions.csv
-          ↓
-10. Update CI for your NEW predict.py
-          ↓
-11. Add Docker build + smoke test to CI
-          ↓
-12. Merge to main
-          ↓
-13. CD builds/tags production image
-          ↓
-14. Run batch container
-          ↓
-15. Add monitoring
+"I implemented the workload locally using Ray and Docker, while retaining an Anyscale job configuration representing the managed remote execution path."
