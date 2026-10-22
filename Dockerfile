@@ -1,9 +1,9 @@
-FROM anyscale/image/ml_engineering:__IMAGE__TAG
+FROM python:3.12-slim
 
 WORKDIR /app
 
 COPY requirements.txt .
-RUN pip install --upgrade pip setuptools wheel
-RUN pip install --no-cache-dir -r requirements.txt
+COPY churn_src/  churn_src/
+COPY artifacts/  artifacts/
 
-COPY . .
+RUN pip install  --no-cache-dir -r requirements.txt

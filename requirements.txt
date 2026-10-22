@@ -1,6 +1,5 @@
 # Core Data Science & Visualization
 pandas==2.2.3
-scipy==1.14.1
 scikit-learn==1.5.2
 xgboost==2.1.1
 matplotlib==3.9.2
@@ -8,7 +7,7 @@ seaborn==0.13.2
 
 # MLOps & Infrastructure
 mlflow==3.14.0
-dvc==3.67.1
+dvc[gdrive]==3.67.1
 dvclive==3.49.1
 anyscale==0.26.108
 ray==2.35.0
@@ -22,7 +21,6 @@ pytest-cov==5.0.0
 black==24.8.0
 flake8==7.3.0
 isort==8.0.1
-pre-commit==3.8.0
 mkdocs==1.6.1
 
 # Container & AWS

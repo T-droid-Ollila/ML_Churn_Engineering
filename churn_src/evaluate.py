@@ -10,7 +10,6 @@ from config import root_logger
 from feature_engineer import ChurnPreprocessor
 from mlflow.client import MlflowClient
 from mlflow.entities import ViewType
-from tqdm.notebook import tqdm
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
@@ -27,7 +26,7 @@ def get_best_run_id(
     # of results for a particular experiment
 
     experiments = client.search_experiments(filter_string=filter_string)
-    all_exp_ids = [exp.experiment_id for exp in tqdm(experiments)]
+    all_exp_ids = [exp.experiment_id for exp in experiments]
 
     """Find the best run by metric, unless an explicit override is given."""
 
@@ -90,7 +89,8 @@ def score_batch(
     return results_df
 
 
-def save_results(results_df: pd.DataFrame, root: Path) -> Path:
+def save_results(results_df: pd.DataFrame) -> Path:
+    root = Path(__file__).resolve().parent.parent
     predictions_output_dir = root / "predictions_output"
     predictions_output_dir.mkdir(parents=True, exist_ok=True)
     timestamp = datetime.datetime.now().strftime("%Y-%b-%d-%a_%H-%M-%S")

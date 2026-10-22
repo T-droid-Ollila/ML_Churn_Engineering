@@ -1,0 +1,6 @@
+outs:
+- md5: 8e904c8924b00f9adc91740a990149fe.dir
+  size: 6710891
+  nfiles: 2
+  hash: md5
+  path: churn_data

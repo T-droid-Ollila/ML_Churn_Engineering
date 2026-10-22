@@ -174,6 +174,10 @@ def main():
             # No parameters were specified , the empty dict enables us do this objective
             model = extract_models(args.model, {})
 
+            # RandomSearch allows much more hyperparameter values , and faster searching thus saving on time
+
+            # What is the purpose of n_iter in RandomSearch module ?
+
             random_search = RandomizedSearchCV(
                 estimator=model,
                 param_distributions=param_grid,
@@ -287,6 +291,10 @@ def main():
                 )
                 recall = metrics.recall_score(y_train, train_predictions, average="weighted")
 
+                # DVC does provide an option to specify the template/type of visualisation
+                # we need but for we will need a template
+                # right now and we shall use the ones specified in our visualizations functions
+                # in our visualizations script
                 cmap = build_Confusion_matrix(y_train, train_predictions)
                 live.log_image(val=cmap, name="confusion_matrix_train.png")
 
