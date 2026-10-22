@@ -139,11 +139,46 @@ churn_src
 
 <img width="1776" height="886" alt="Machine Learning Workflow Pipeline" src="https://github.com/user-attachments/assets/066d22d6-cb8d-4b23-831c-1a5c534513d7" />
 
-### Training 
+### Training
+
+
 
 ### Evaluation
 
+```
+
+def promote_model_to_production(
+    client: MlflowClient, run_id: str, model_path: str, model_name: str, alias: str
+):
+    """Promote a model to production by registering it and setting an alias."""
+
+    model_uri = f"runs:/{run_id}/{model_path}"
+
+    with mlflow.start_run(run_id=run_id):  # start_run, not the nonexistent mlflow.run
+        model_version = mlflow.register_model(model_uri=model_uri, name=model_name)
+
+        # model_info.registered_model_version gives the REAL version, not a hardcoded "1"
+        client.set_registered_model_alias(
+            name=model_name, alias=alias, version=model_version.version
+        )
+
+        mlflow.end_run()
+
+model = mlflow.sklearn.load_model("models:/production_tree_model@production")
+
+```
 ### Predict
+
+```
+$env:MODEL = 'artifacts\prod_model\model.pkl'
+$env:PROCESSOR = 'artifacts/processed/preprocessor.pkl'
+$env:DATASET = "C:\Data\messy_churn_10000.csv"
+
+python -m pytest --dataset-loc="$env:DATASET" tests/data --verbose --disable-warnings
+
+python churn_src\predict.py $env:PROCESSOR $env:DATASET
+
+```
 
 ## Production
 
@@ -157,46 +192,29 @@ churn_src
   docker build -t Churn . # The first command looks at the blue print from the dockerfile to build our custom image
 
   docker run --rm `
->> --mount "type=bind,source=$($env:DATASET),target=/app/incoming.csv,readonly" `
->> --mount "type=bind,source=$($PWD.Path)/predictions_output,target=/app/predictions_output" `
->> first `
->> python churn_src/predict.py `
->> /app/artifacts/processed/preprocessor.pkl `
->> /app/incoming.csv `
->> /app/artifacts/prod_model/model.pkl
+ --mount "type=bind,source=$($env:DATASET),target=/app/incoming.csv,readonly" `
+ --mount "type=bind,source=$($PWD.Path)/predictions_output,target=/app/predictions_output" `
+ first `
+ python churn_src/predict.py `
+ /app/artifacts/processed/preprocessor.pkl `
+ /app/incoming.csv `
+ /app/artifacts/prod_model/model.pkl
 
   ```
-
-Learn Ordinal Encoding , mapping , visualizing feature distributions , dealing with unbalanced datasets
-
-Encountering problems along the way such as why is precision so consistently across three different models
-but recall consistently is above 98% some models even hitting 100% , made me ask is this class imbalance or is my model
-prioritising recall because in this churn scenario we would want our model to predict those who were most likely to churn
-to help prioritise business numbers don't want to risk losing customers
-
-Nested cross-validation (CV) is often used to train a model in which hyperparameters also need to be optimized . Nested CV estimates the generalization error of the underlying model and its (hyper)parameter search. Choosing the parameters that maximize non-nested CV biases the model to the dataset, yielding an overly-optimistic score.
-
-Model selection without nested CV uses the same data to tune model parameters and evaluate model performance. Information may thus “leak” into the model and overfit the data. The magnitude of this effect is primarily dependent on the size of the dataset and the stability of the model.
-
-Do I use RandomSearchCV with cross_validate ?
-
-MY ANSWER : When implemeting NestedCV
-
-Nested == LOOP BASED
-
-Nested CV estimates the generalization error of the underlying model and its (hyper)parameter search. Choosing the parameters that maximize non-nested CV biases the model to the dataset, yielding an overly-optimistic score.
-
-A variable param_opt which is a dict for optimizing hyperparameter
-
-RandomSearch allows much more hyperparameter values , and faster searching tus saving on time
-
-What is the purpose of n_iter in RandomSearch module ?
-
-DVC does provide an option to specify the template/type of visualisation we need but for we will need a template right now and we shall use the ones specified in our visualizations functions in our visualizations script
-
-### CI\CD WITH GITHUB ACTIONS
+## CI\CD WITH GITHUB ACTIONS
 
 <img width="1797" height="875" alt="MLOps CI_CD Continual Learning Workflow" src="https://github.com/user-attachments/assets/3a207954-0973-44ec-8cd1-4cc1ace47be3" />
+
+### Extra Thoughts
+
+- **Encountering problems along the way such as why is precision so consistently across three different models but recall consistently is above 98% some models even hitting 100% , made me ask is this class imbalance or is my model prioritising recall because in this churn scenario we would want our model to predict those who were most likely to churn to help prioritise business numbers don't want to risk losing customers.**
+
+- **Nested cross-validation (CV) is often used to train a model in which hyperparameters also need to be optimized . Nested CV estimates the generalization error of the underlying model and its (hyper)parameter search. Choosing the parameters that maximize non-nested CV biases the model to the dataset, yielding an overly-optimistic score.**
+
+- **Model selection without nested CV uses the same data to tune model parameters and evaluate model performance. Information may thus “leak” into the model and overfit the data. The magnitude of this effect is primarily dependent on the size of the dataset and the stability of the model.**
+
+- **Do I use Random Search CV with cross_validate ? MY ANSWER : When implementing Nested CV , Nested == LOOP BASED , Nested CV estimates the generalization error of the underlying model and its (hyper)parameter search. Choosing the parameters that maximize non-nested CV biases the model to the dataset, yielding an overly-optimistic score.**
+
 
 ---
 
