@@ -182,26 +182,59 @@ python churn_src\predict.py $env:PROCESSOR $env:DATASET
 
 ## Production
 
-<img width="1400" height="800" alt="Docker, CI_CD, and Ray Clash" src="https://github.com/user-attachments/assets/62ce108e-0dd7-4896-a82a-0d5f770ff103" />
+- **Production environments are anything but smooth because code that worked in development environment no longer work in production but thanks to conayiner we can be able to ***simulate*** the same environment to ensure our codes works as expected.**
+
+- **The workflow that we shall implement is like so:**
+
+<img width="1055" height="896" alt="Deployment   Monitoring Workflow" src="https://github.com/user-attachments/assets/71c42b3b-e690-45b5-a810-8f531fac895f" />
+
+### Docker
 
 - **We shall be deploying this model locally as a containerised job.**
 
  <img width="2057" height="764" alt="Docker Pipeline_ File to Container" src="https://github.com/user-attachments/assets/23cd69ad-7822-4615-bb31-32ad4939811b" />
+ 
+```
+ /app/
+├── churn_src/
+│   └── predict.py
+│
+├── artifacts/
+│   ├── model.pkl
+│   └── preprocessor.pkl
+│
+├── data/
+│   └── incoming.csv
+│
+└── predictions_output/
 
-  ```
-  docker build -t Churn . # The first command looks at the blue print from the dockerfile to build our custom image
+```
+- **The Dockerfile provides blue print of how we want the structure of our project file to look like in the containerised environment**
 
-  docker run --rm `
- --mount "type=bind,source=$($env:DATASET),target=/app/incoming.csv,readonly" `
- --mount "type=bind,source=$($PWD.Path)/predictions_output,target=/app/predictions_output" `
- first `
- python churn_src/predict.py `
- /app/artifacts/processed/preprocessor.pkl `
- /app/incoming.csv `
- /app/artifacts/prod_model/model.pkl
+```
+docker build -t Churn . # The first command looks at the blue print from the dockerfile to build our custom image
 
-  ```
-## CI\CD WITH GITHUB ACTIONS
+docker run --rm `
+--mount "type=bind,source=$($env:DATASET),target=/app/incoming.csv,readonly" `
+--mount "type=bind,source=$($PWD.Path)/predictions_output,target=/app/predictions_output" `
+first `
+python churn_src/predict.py `
+/app/artifacts/processed/preprocessor.pkl `
+/app/incoming.csv `
+/app/artifacts/prod_model/model.pkl
+
+```
+- **The mounts represent the data and mounted volume that we are going to use to predict and store our predicted results respectively.Mount is used when your container requires a particular file but was not build alongside your container.For me I considered it computationally efficient to put them separately.**
+
+### CI\CD WITH GITHUB ACTIONS
+
+- **We're not going to manually deploy our application every time we make a change. Instead, we'll automate this process using GitHub Actions!**
+
+<img width="568" height="555" alt="Deployment   Monitoring Workflow" src="https://github.com/user-attachments/assets/de76e1f2-ed5d-4a9a-910a-6d31be34cca2" />
+
+### Continual Learning.
+
+- **With our CI/CD workflow in place to deploy our application, we can now focus on continually improving our model. It becomes really easy to extend on this foundation to connect to scheduled runs (cron), data pipelines, drift detected through monitoring, online evaluation, etc. And we can easily add additional context such as comparing any experiment with what's currently in production (directly in the PR even), etc.**
 
 <img width="1797" height="875" alt="MLOps CI_CD Continual Learning Workflow" src="https://github.com/user-attachments/assets/3a207954-0973-44ec-8cd1-4cc1ace47be3" />
 
@@ -215,8 +248,6 @@ python churn_src\predict.py $env:PROCESSOR $env:DATASET
 
 - **Do I use Random Search CV with cross_validate ? MY ANSWER : When implementing Nested CV , Nested == LOOP BASED , Nested CV estimates the generalization error of the underlying model and its (hyper)parameter search. Choosing the parameters that maximize non-nested CV biases the model to the dataset, yielding an overly-optimistic score.**
 
-
----
 
  [![Anurag's GitHub stats](https://github-stats-extended.vercel.app/api/?username=T-droid-Ollila&show_icons=true&theme=calm&rank_icon=github&include_all_commits=true&custom_title=Ollila's+Stats&disable_animations=true&number_format=long&show=prs_merged_percentage,prs_reviewed)](https://github-stats-extended.vercel.app/api/?username=T-droid-Ollila&show_icons=true&theme=calm&rank_icon=github&include_all_commits=true&custom_title=Ollila's+Stats&disable_animations=true&number_format=long&show=prs_merged_percentage,prs_reviewed)
  
