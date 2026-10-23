@@ -230,6 +230,8 @@ python churn_src/predict.py `
 
 - **We're not going to manually deploy our application every time we make a change. Instead, we'll automate this process using GitHub Actions!**
 
+- **In short, Docker + CI/CD = streamlined DevOps magic. ✨**
+
 <img width="568" height="555" alt="Deployment   Monitoring Workflow" src="https://github.com/user-attachments/assets/de76e1f2-ed5d-4a9a-910a-6d31be34cca2" />
 
 ### Continual Learning.
