@@ -238,7 +238,8 @@ python churn_src/predict.py `
 
 ### Continual Learning.
 
-- **With our CI/CD workflow in place to deploy our application, we can now focus on continually improving our model. It becomes really easy to extend on this foundation to connect to scheduled runs (cron), data pipelines, drift detected through monitoring, online evaluation, etc. And we can easily add additional context such as comparing any experiment with what's currently in production (directly in the PR even), etc.**
+- **With our CI/CD workflow in place to deploy our application, we can now focus on continually improving our model. It becomes really easy to extend on this foundation to connect to scheduled runs (cron), data pipelines, drift detected through [monitoring](https://madewithml.com/courses/mlops/monitoring/), [online evaluation](https://madewithml.com/courses/mlops/evaluation/#online-evaluation), etc. And we can easily add additional context such as comparing any experiment with what's currently in production (directly in the PR even), We shall apply all these techniques using [nanny ml](https://www.nannyml.com/), a popular open source tool for monitoring ML models to monitor our batch performance models etc.**
+
 - **In our CI/CD use case we can push iamges to [AWS](https://aws.amazon.com/ecr/) , [Github contaiiner registry](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry) , and Docker Hub, but for our case we shall stick to hub**
 
 <img width="1797" height="875" alt="MLOps CI_CD Continual Learning Workflow" src="https://github.com/user-attachments/assets/3a207954-0973-44ec-8cd1-4cc1ace47be3" />
