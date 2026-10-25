@@ -232,6 +232,8 @@ python churn_src/predict.py `
 
 - **In short, Docker + CI/CD = streamlined DevOps magic. ✨**
 
+- **For detailed reasons behind the design and considerations , please refer to the [github/workflows](https://github.com/T-droid-Ollila/ML_Churn_Engineering/tree/main/.github/workflows).**
+
 <img width="568" height="555" alt="Deployment   Monitoring Workflow" src="https://github.com/user-attachments/assets/de76e1f2-ed5d-4a9a-910a-6d31be34cca2" />
 
 ### Continual Learning.
