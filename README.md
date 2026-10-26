@@ -262,6 +262,7 @@ python churn_src/predict.py `
 
 - **Do I use Random Search CV with cross_validate ? MY ANSWER : When implementing Nested CV , Nested == LOOP BASED , Nested CV estimates the generalization error of the underlying model and its (hyper)parameter search. Choosing the parameters that maximize non-nested CV biases the model to the dataset, yielding an overly-optimistic score.**
 
+- **One consideration I wanted to have was to mimick how real world data is processed into Github Actions, so for deployment we opted for a self hosted runner due to the location storage of our incoming data, if our data was in a remote storage like S3, R2, GCS , we would have used a virtual machine for our Github actions runner.**
 
  [![Anurag's GitHub stats](https://github-stats-extended.vercel.app/api/?username=T-droid-Ollila&show_icons=true&theme=calm&rank_icon=github&include_all_commits=true&custom_title=Ollila's+Stats&disable_animations=true&number_format=long&show=prs_merged_percentage,prs_reviewed)](https://github-stats-extended.vercel.app/api/?username=T-droid-Ollila&show_icons=true&theme=calm&rank_icon=github&include_all_commits=true&custom_title=Ollila's+Stats&disable_animations=true&number_format=long&show=prs_merged_percentage,prs_reviewed)
 
