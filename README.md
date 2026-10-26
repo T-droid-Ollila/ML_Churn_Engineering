@@ -83,7 +83,9 @@ dvc pull
 ```
 ### Setting Up Google Drive Remote Storage and retrieve data from remote storage
 
-<img width="1536" height="1024" alt="cff8f784-eaa1-48c9-a2c8-8b2b02280a79" src="https://github.com/user-attachments/assets/d141f94c-9b6b-4c96-91d4-1a339e3ef264" />
+- **The intuition behind remote storage is due to Github limiting sizes of files that can be committed to github especially large datastets it is best practice to store the data in a remote stoarge that can handle the large size of the files without bloating your repo.Thus we shall Google drive remote storage which is dvc enabled.**
+
+<img width="1136" height="824" alt="cff8f784-eaa1-48c9-a2c8-8b2b02280a79" src="https://github.com/user-attachments/assets/d141f94c-9b6b-4c96-91d4-1a339e3ef264" />
 
 To configure your local DVC remote storage using Google Drive, follow these steps to ensure secure authentication and proper synchronization
 
@@ -115,6 +117,12 @@ dvc add remote -d gdrive_remote gdrive://folderID
 # Use the commands to set the credentials
 dvc remote modify --local myremote gdrive_client_id 'client-id'
 dvc remote modify --local myremote gdrive_client_secret 'client-secret'
+
+# Have a look at your remote storage type
+dvc remote list
+
+# Check credentials
+dvc config --local --list
 
 # Then :
 dvc push
@@ -189,7 +197,7 @@ python churn_src\predict.py $env:PROCESSOR $env:DATASET
 <img width="1055" height="896" alt="Deployment   Monitoring Workflow" src="https://github.com/user-attachments/assets/71c42b3b-e690-45b5-a810-8f531fac895f" />
 
 ### Docker
-
+- ****
 - **We shall be deploying this model locally as a containerised job.**
 
  <img width="2057" height="764" alt="Docker Pipeline_ File to Container" src="https://github.com/user-attachments/assets/23cd69ad-7822-4615-bb31-32ad4939811b" />
