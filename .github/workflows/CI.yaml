@@ -1,23 +1,105 @@
+# Continuous Integration (CI): Automates code testing, linting, and building every time new code is committed.
+# We can design this workflow so that code is automatically tested and built when a pull request is opened or updated.
+# This ensures that the code meets quality standards before it is merged into the main branch.
+# We can also build a new image for whenever there are changes to the Dockerfile and to the source code
+# ensuring that the latest image is always available for deployment.
+# But where there are no changes to source code or Dockerfile, we use the existing image to save time and resources.
+
+# We can implement pre-commit hooks inside our yaml file to check before we build an image
+# We want the jobs to build an image incase of source code or Dockerfile changes,
+# run the tests on the source code to ensure that the code is functioning as expected.
+# Then build an image, then to avoid storage issues , delete previous images and then push the new image to the registry.
+# Do I need to build a directory to run smoke tests, also if create will it it create even when it exists
+
+# Ok ,why does Github SHA work ,because i know the sha refers to commits my yaml structure is not tailored for
+# many commits due to the pul request but I feel it fits coz we want the script to be tailored for a new image
+# incase of code changes
+
+# let's go for a self hosted runner for deployment.yaml the code runs on my machine ,
+# now in command we have a hard coded value for the image when running a container
+# but I don't wanna hard code , can it retrieve the latest image
+# instead of hard coding the first image .
+
+# in this example we can build an image and retrieve using SHA tag
+
+# We need to understand that:
+#1. We need to build an iamge only if code changes to specific files are changed
+#2. If we are building the iamge then artifacts should be accesible, then it makes decide whether we go for a remote or seif-runner
+#3. The tags also need to be considered
+#4. we should commit the artifacts to git , but in a later design we shall put them in mlflow
+#5. Define a concurrency to ensure workflows/jobs go in order
+#6. Define 1st job whch is python setup
+#7. Define 2nd & 3rd job which is code formating
+#8. Defien for logging in and building an image , if changes are made to main branch
+#9. Define pull image
+#10. #Define smoke test
+
 name: Establish CI workflows
-on: 
+on:
   pull_request:
-    types: [opened, reopened , review_requested, synchronize]
+    branches: [main]
+    types: [opened, reopened, review_requested, synchronize]
+    paths:
+      - "churn_src/**"
+      - "Dockerfile"
+  push:
+    branches: [main]
+    paths:
+      - "churn_src/**"
+      - "Dockerfile"
+
+concurrency:
+  group: prod
+
+env:
+  IMAGE_NAME: ollilatd  # This is my docker username
 
 jobs:
   setup-machine:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v4
         with:
           python-version: 3.12
           cache: 'pip'
 
-      - name: Run Docker
+ # 1. Cheap checks first, so failures happen before any image work
+      - name: code format
         run: |
-          export ANYSCALE_HOST: ${{ secrets.ANYSCALE_HOST }}
-          export ANYSCALE_CLI_TOKEN: ${{ secrets.ANYSCALE_CLI_TOKEN }}
-          anyscale image build -n churn-job-image --containerfile Dockerfile
+          pip install -r requirements.txt black flake isort
+          isort --check-only churn_src
+          black --check-only churn_src
+          flake --check-only churn_src
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: pre-commit hooks
+        run: |
+          pip install pre-commit
+          pre-commit run --all-files
+
+      - name: Docker login
+        if: github.event_name == 'push'
+        uses: docker/login-action@v3
+        with:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build and Push Docker Image
+        if: github.event_name == 'push'
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tag: ${{ env.IMAGE_NAME }}:${{ steps.meta.outputs.tag }}
+          cache-from: type=gha
+
+      - name: Pull image by SHA tag
+        run: docker pull ${{ env.IMAGE_NAME }}:${{ steps.meta.outputs.tag}}
+
+      - name: Smoke test
+        run: |
+          docker run --rm "${{ env.IMAGE_NAME }}:${{ steps.meta.outputs.tag }}" python -c "import churn_src; print('ok')"

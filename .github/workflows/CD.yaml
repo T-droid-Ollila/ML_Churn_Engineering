@@ -1,30 +1,69 @@
+# We can design pytest to be run on the data is functioning as expected.
+# Then run the containrised batch job
+# WE can first start with manual trigger , when we receive new incoming data
+# we need to read and write permissions to allow this workflow
+# to read and write to our repo due to the mounted volume
 name: Deploy established CI workflows
 on:
-  push:
-    branches:
-      - 'main'
+  workflow_dispatch:
+    inputs:
+      data_path:
+        description: "Path to the incoming CSV on the runner machine"
+        required: true
+        default: 'C:\Data\messy_churn_20000.csv'
+
+permissions: write-all
+  # Enables to read and write to repo
 
 jobs:
   submit-batch-job:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted,windows]
+    env:
+      DATA_PATH: ${{ inputs.data_path }}
+      OUT_DIR: C:\Churn_Engineering\predictions_output
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        # This pull code from repo to actions directory
+        uses: actions/checkout@v5
 
-      # Configure AWS credentials
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v2
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
-          aws-region: us-east-1
-          
-      - name: Install Anyscale CLI
-        run: pip install anyscale
-        with: 
+          python-version: 3.12
           cache: 'pip'
 
-      - name: Submit batch-predict job
+      - name: Install test dependencies
         run: |
-          export ANYSCALE_HOST: ${{ secrets.ANYSCALE_HOST }}
-          export ANYSCALE_CLI_TOKEN: ${{ secrets.ANYSCALE_CLI_TOKEN }}
-          export AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          export AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          anyscale job submit -f deploy/jobs/job.yaml --wait
+          pip install -r requirements.txt pytest
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Validate data
+        shell: pwsh
+        run: python -m pytest --dataset-loc="$env:DATA_PATH" tests/data --verbose --disable-warnings
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Docker login
+        uses: docker/login-action@v3
+        with:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Pull image
+        run: |
+          docker pull first
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Submit containerised batch-predict job
+        shell: pwsh
+        run: |
+          docker run --rm `
+            --mount "type=bind,source=$($env:DATA_PATH),target=/app/incoming.csv,readonly" `
+            --mount "type=bind,source=$($env:OUT_DIR),target=/app/predictions_output" `
+            first `
+            python churn_src/predict.py `
+            /app/artifacts/processed/preprocessor.pkl `
+            /app/incoming.csv `
+            /app/artifacts/prod_model/model.pkl
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+          Write-Host "Predictions written to $env:OUT_DIR"

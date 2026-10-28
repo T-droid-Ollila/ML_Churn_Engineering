@@ -12,9 +12,9 @@ $env:MLFLOW_SERVER = 'http://127.0.0.1:5000/'
 $env:MODEL = 'artifacts\prod_model\model.pkl'
 $env:PROCESSOR = 'artifacts/processed/preprocessor.pkl'
 
-# python -m pytest --dataset-loc="$env:DATASET_LOC" tests/data --verbose
+python -m pytest --dataset-loc="$env:DATASET_LOC" tests/data --verbose
 
-# python churn_src\evaluate.py $env:DATASET_LOC $env:RUN_ID $env:MLFLOW_SERVER
+python churn_src\evaluate.py $env:DATASET_LOC $env:RUN_ID $env:MLFLOW_SERVER
 
 python -m pytest --dataset-loc="$env:DATASET" tests/data --verbose --disable-warnings
 

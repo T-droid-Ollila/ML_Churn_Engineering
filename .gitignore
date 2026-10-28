@@ -1,5 +1,4 @@
 \virtual
-artifacts/
 \logs
 .vscode/
 .dvc/config.local

@@ -1,7 +1,7 @@
 # Core Data Science & Visualization
 pandas==2.2.3
 scikit-learn==1.5.2
-xgboost==2.1.1
+# xgboost==2.1.1
 matplotlib==3.9.2
 seaborn==0.13.2
 
@@ -11,8 +11,6 @@ dvc[gdrive]==3.67.1
 dvclive==3.49.1
 anyscale==0.26.108
 ray==2.35.0
-nannyml==0.13.1
-fastapi==0.139.0
 great_expectations==0.18.22
 
 # Code Quality & Testing
@@ -24,6 +22,6 @@ isort==8.0.1
 mkdocs==1.6.1
 
 # Container & AWS
-docker==7.1.0
-boto3==1.43.56
-botocore==1.43.56
+# docker==7.1.0
+# boto3==1.43.56
+# botocore==1.43.56
