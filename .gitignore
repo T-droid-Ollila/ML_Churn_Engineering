@@ -13,3 +13,5 @@ predictions_output/
 /processed_data
 /train_test
 /churn_data
+.dvc/config/
+.dvc/config
