@@ -24,13 +24,7 @@ jobs:
     steps:
       - name: Checkout repository
         # This pull code from repo to actions directory
-        uses: actions/checkout@v5
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: 3.12
-          cache: 'pip'
+        uses: actions/checkout@v4
 
       - name: Install test dependencies
         run: |
