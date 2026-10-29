@@ -32,7 +32,6 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
       - name: Validate data
-        shell: pwsh
         run: python -m pytest --dataset-loc="$env:DATA_PATH" tests/data --verbose --disable-warnings
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
