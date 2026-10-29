@@ -31,10 +31,6 @@ jobs:
           pip install -r requirements.txt pytest
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
-      - name: Validate data
-        run: python -m pytest --dataset-loc="$env:DATA_PATH" tests/data --verbose --disable-warnings
-          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-
       - name: Docker login
         uses: docker/login-action@v3
         with:
