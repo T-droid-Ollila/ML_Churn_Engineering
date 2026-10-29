@@ -47,7 +47,6 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
       - name: Submit containerised batch-predict job
-        shell: pwsh
         run: |
           docker run --rm `
             --mount "type=bind,source=$($env:DATA_PATH),target=/app/incoming.csv,readonly" `
