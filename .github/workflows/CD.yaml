@@ -37,17 +37,12 @@ jobs:
           username: ${{ vars.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Pull image
-        run: |
-          docker pull ${{ vars.DOCKERHUB_USERNAME }}/first
-          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-
       - name: Submit containerised batch-predict job
         run: |
           docker run --rm `
             --mount "type=bind,source=$($env:DATA_PATH),target=/app/incoming.csv,readonly" `
             --mount "type=bind,source=$($env:OUT_DIR),target=/app/predictions_output" `
-            first `
+            ${{ vars.DOCKERHUB_USERNAME }}/first `
             python churn_src/predict.py `
             /app/artifacts/processed/preprocessor.pkl `
             /app/incoming.csv `
