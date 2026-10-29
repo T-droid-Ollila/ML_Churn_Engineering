@@ -39,7 +39,7 @@ jobs:
 
       - name: Pull image
         run: |
-          docker pull first
+          docker pull ${{ vars.DOCKERHUB_USERNAME }}/first
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
       - name: Submit containerised batch-predict job
